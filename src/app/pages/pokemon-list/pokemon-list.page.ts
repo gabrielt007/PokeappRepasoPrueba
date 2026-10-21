@@ -1,12 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { PokemonService } from 'src/app/services/pokemon.service';
+import { Pokemon, PokemonService } from 'src/app/services/pokemon.service';
+
+interface PokemonListItem {
+  name: string;
+  url: string;
+}
+
 @Component({
   selector: 'app-pokemon-list',
   templateUrl: './pokemon-list.page.html',
   styleUrls: ['./pokemon-list.page.scss'],
 })
 export class PokemonListPage implements OnInit {
-  pokemons: any[] = [];
+  pokemons: PokemonListItem[] = [];
+  selectedPokemon: Pokemon | null = null;
+  imagenGrande: string | null = null;
+  errorMessage = '';
   loading = false;
   searchTerm: string = '';
   constructor(private pokemonService: PokemonService) {}
@@ -18,6 +27,9 @@ export class PokemonListPage implements OnInit {
   // Traer todos los pokemones
   fetchPokemons() {
     this.loading = true;
+    this.errorMessage = '';
+    this.selectedPokemon = null;
+    this.imagenGrande = null;
     this.pokemonService.getPokemons(50).subscribe({
       next: (response) => {
         this.pokemons = response.results;
@@ -25,28 +37,46 @@ export class PokemonListPage implements OnInit {
       },
       error: (error) => {
         console.error('Error fetching Pokémon:', error);
+        this.errorMessage = 'No se pudo cargar la lista de Pokémon.';
         this.loading = false;
       },
     });
   }
 
   //Buscar Pokemones
-  buscarPokemons(){
-    if(!this.searchTerm.trim()){
+  buscarPokemons() {
+    if (!this.searchTerm.trim()) {
       this.fetchPokemons();
       return;
     }
+
+    this.cargarPokemon(this.searchTerm.trim().toLowerCase());
+  }
+
+  cargarPokemon(name: string) {
     this.loading = true;
-    this.pokemonService.getPokemonDetails(this.searchTerm.toLowerCase()).subscribe({
-      next: (response) => {
-        this.pokemons = [response];
+    this.errorMessage = '';
+    this.pokemonService.getPokemonDetails(name).subscribe({
+      next: (pokemon) => {
+        this.selectedPokemon = pokemon;
+        this.imagenGrande = this.imagenes(pokemon)[0] ?? null;
         this.loading = false;
       },
       error: (error) => {
         console.error('Error al encontrar Pokémon:', error);
         this.loading = false;
-        this.pokemons = [];
+        this.selectedPokemon = null;
+        this.imagenGrande = null;
+        this.errorMessage = `No se encontró el Pokémon "${name}".`;
       },
     });
+  }
+
+  imagenes(pokemon: Pokemon | null): string[] {
+    return pokemon ? this.pokemonService.getPokemonGalery(pokemon) : [];
+  }
+
+  animacion(pokemon: Pokemon | null): string | null {
+    return pokemon ? this.pokemonService.getPokemonAnimatedSprite(pokemon) : null;
   }
 }

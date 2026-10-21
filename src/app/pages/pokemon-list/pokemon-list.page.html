@@ -2,17 +2,55 @@
   <ion-toolbar>
     <ion-title>Pokémon List</ion-title>
   </ion-toolbar>
-  <ion-input [(ngModel)]="searchTerm" aria-placeholder="pokemon" class="ion-padding-start" type="text" value="pokemon/"></ion-input>
-  <ion-button (click)="buscarPokemons()" color="primary">Buscar</ion-button>
+  <ion-toolbar>
+    <ion-searchbar [(ngModel)]="searchTerm" placeholder="Buscar por nombre o número"
+      (keyup.enter)="buscarPokemons()"></ion-searchbar>
+    <ion-button slot="end" (click)="buscarPokemons()" color="primary">Buscar</ion-button>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <p class="error-message" *ngIf="errorMessage" role="alert">{{ errorMessage }}</p>
+
+  <section class="pokemon-details" *ngIf="selectedPokemon as pokemon">
+    <h2>{{ pokemon.name | titlecase }}</h2>
+
+    <div class="featured-image" *ngIf="imagenGrande">
+      <img [src]="imagenGrande" [alt]="pokemon.name | titlecase" />
+    </div>
+
+    <h3><ion-icon name="images-outline"></ion-icon> Galería</h3>
+    <div class="gallery">
+      <button type="button" *ngFor="let url of imagenes(pokemon); let index = index"
+        (click)="imagenGrande = url" [attr.aria-label]="'Mostrar imagen ' + (index + 1)">
+        <img [src]="url" [alt]="'Sprite ' + (index + 1) + ' de ' + pokemon.name" loading="lazy" />
+      </button>
+    </div>
+    <p class="hint" *ngIf="imagenes(pokemon).length < 5">
+      La API solo ofrece {{ imagenes(pokemon).length }} imágenes para este Pokémon.
+    </p>
+
+    <div class="media-controls">
+      <div *ngIf="pokemon.cries?.latest || pokemon.cries?.legacy">
+        <h3>Sonido</h3>
+        <audio controls [src]="pokemon.cries?.latest || pokemon.cries?.legacy"></audio>
+      </div>
+      <div *ngIf="animacion(pokemon) as animatedSprite">
+        <h3>Animación</h3>
+        <img class="animated-sprite" [src]="animatedSprite" [alt]="'Animación de ' + pokemon.name" />
+      </div>
+    </div>
+  </section>
+
+  <p class="hint" *ngIf="!selectedPokemon && !loading && !errorMessage">
+    Busca un Pokémon o selecciónalo de la lista para ver sus imágenes y sonido.
+  </p>
+
   <ion-list>
-    <ion-item *ngFor="let pokemon of pokemons">
+    <ion-item button detail *ngFor="let pokemon of pokemons" (click)="cargarPokemon(pokemon.name)">
       <ion-label>{{ pokemon.name | titlecase }}</ion-label>
-      <a href="{{ pokemon.url}}"><ion-label>{{ pokemon.url}}</ion-label></a>
     </ion-item>
   </ion-list>
 
-  <ion-spinner *ngIf="loading" class="loading-spinner"></ion-spinner>
+  <ion-spinner *ngIf="loading" class="loading-spinner" aria-label="Cargando"></ion-spinner>
 </ion-content>
