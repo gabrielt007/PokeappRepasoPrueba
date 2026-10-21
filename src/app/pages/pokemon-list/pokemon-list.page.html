@@ -2,6 +2,8 @@
   <ion-toolbar>
     <ion-title>Pokémon List</ion-title>
   </ion-toolbar>
+  <ion-input [(ngModel)]="searchTerm" aria-placeholder="pokemon" class="ion-padding-start" type="text" value="pokemon/"></ion-input>
+  <ion-button (click)="buscarPokemons()" color="primary">Buscar</ion-button>
 </ion-header>
 
 <ion-content>
@@ -9,9 +11,7 @@
     <ion-item *ngFor="let pokemon of pokemons">
       <ion-label>{{ pokemon.name | titlecase }}</ion-label>
       <a href="{{ pokemon.url}}"><ion-label>{{ pokemon.url}}</ion-label></a>
-      
     </ion-item>
-  
   </ion-list>
 
   <ion-spinner *ngIf="loading" class="loading-spinner"></ion-spinner>
