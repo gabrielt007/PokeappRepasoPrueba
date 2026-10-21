@@ -18,13 +18,14 @@ export class PokemonListPage implements OnInit {
   errorMessage = '';
   loading = false;
   searchTerm: string = '';
+
   constructor(private pokemonService: PokemonService) {}
 
   ngOnInit() {
     this.fetchPokemons();
-    
   }
-  // Traer todos los pokemones
+
+  // Traer todos los pokemones para la lista inicial
   fetchPokemons() {
     this.loading = true;
     this.errorMessage = '';
@@ -43,9 +44,9 @@ export class PokemonListPage implements OnInit {
     });
   }
 
-  //Buscar Pokemones
+  // Buscar Pokémon por nombre o id
   buscarPokemons() {
-    if (!this.searchTerm.trim()) {
+    if (!this.searchTerm || !this.searchTerm.trim()) {
       this.fetchPokemons();
       return;
     }
@@ -53,6 +54,7 @@ export class PokemonListPage implements OnInit {
     this.cargarPokemon(this.searchTerm.trim().toLowerCase());
   }
 
+  // Cargar los detalles completos de un Pokémon específico
   cargarPokemon(name: string) {
     this.loading = true;
     this.errorMessage = '';
@@ -72,10 +74,12 @@ export class PokemonListPage implements OnInit {
     });
   }
 
+  // Obtener galería de imágenes del Pokémon
   imagenes(pokemon: Pokemon | null): string[] {
     return pokemon ? this.pokemonService.getPokemonGalery(pokemon) : [];
   }
 
+  // Obtener animación del Pokémon
   animacion(pokemon: Pokemon | null): string | null {
     return pokemon ? this.pokemonService.getPokemonAnimatedSprite(pokemon) : null;
   }

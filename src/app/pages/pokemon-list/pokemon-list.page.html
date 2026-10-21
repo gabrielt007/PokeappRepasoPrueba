@@ -40,17 +40,35 @@
         <img class="animated-sprite" [src]="animatedSprite" [alt]="'Animación de ' + pokemon.name" />
       </div>
     </div>
+
+    <!-- Visualización directa del JSON completo del Pokémon seleccionado -->
+    <div class="ion-padding">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>JSON Completo ({{ pokemon.name | titlecase }})</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <pre style="background: var(--ion-color-step-100, #f4f5f8); padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 12px;">{{ pokemon | json }}</pre>
+        </ion-card-content>
+      </ion-card>
+    </div>
   </section>
 
   <p class="hint" *ngIf="!selectedPokemon && !loading && !errorMessage">
     Busca un Pokémon o selecciónalo de la lista para ver sus imágenes y sonido.
   </p>
 
-  <ion-list>
+  <!-- Lista general que se oculta automáticamente al seleccionar o buscar un Pokémon -->
+  <ion-list *ngIf="!selectedPokemon">
     <ion-item button detail *ngFor="let pokemon of pokemons" (click)="cargarPokemon(pokemon.name)">
-      <ion-label>{{ pokemon.name | titlecase }}</ion-label>
+      <ion-label>
+        <h2>{{ pokemon.name | titlecase }}</h2>
+      </ion-label>
+      <ion-button [href]="pokemon.url" target="_blank" fill="clear" slot="end">
+        Ver JSON
+      </ion-button>
     </ion-item>
   </ion-list>
 
-  <ion-spinner *ngIf="loading" class="loading-spinner" aria-label="Cargando"></ion-spinner>
+  <ion-spinner *ngIf="loading" class="loading-spinner" aria-label="Cargando" style="display: block; margin: 20px auto;"></ion-spinner>
 </ion-content>
