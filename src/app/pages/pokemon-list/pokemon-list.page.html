@@ -1,123 +1,85 @@
 <ion-header>
-  <!-- Barra superior con el título de la aplicación -->
   <ion-toolbar color="primary">
-    <!-- Título de la app -->
     <ion-title>PokéApp</ion-title>
   </ion-toolbar>
 
-  <!-- Barra con selector de secciones: Explorar o Comparar -->
   <ion-toolbar color="light">
-    <!-- Segmento enlazado a la variable vistaActual -->
     <ion-segment [(ngModel)]="vistaActual">
-      <!-- Pestaña para explorar y buscar Pokémon -->
       <ion-segment-button value="lista">
-        <!-- Etiqueta de la pestaña lista -->
         <ion-label>Explorar</ion-label>
       </ion-segment-button>
-      <!-- Pestaña para la sección de comparación -->
       <ion-segment-button value="comparar">
-        <!-- Etiqueta de la pestaña comparar -->
         <ion-label>Comparar</ion-label>
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
 
-  <!-- Barra de búsqueda: visible solo en la vista de lista y cuando no hay un Pokémon abierto -->
   <ion-toolbar *ngIf="vistaActual === 'lista' && !selectedPokemon">
-    <!-- Campo de búsqueda reactivo -->
     <ion-searchbar [(ngModel)]="searchTerm" placeholder="Buscar por nombre o número"
       (keyup.enter)="buscarPokemons()"></ion-searchbar>
-    <!-- Botón para disparar la búsqueda -->
     <ion-button slot="end" (click)="buscarPokemons()" color="primary">Buscar</ion-button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <!-- ================= VISTA DE LISTA Y DETALLES ================= -->
   <div *ngIf="vistaActual === 'lista'">
-    <!-- Mensaje de error si la búsqueda falla -->
     <p class="error-message" *ngIf="errorMessage" role="alert">{{ errorMessage }}</p>
 
-    <!-- Botón para regresar al listado cuando un Pokémon está seleccionado -->
     <div *ngIf="selectedPokemon" class="ion-padding-start ion-padding-top">
-      <!-- Botón que limpia la selección y vuelve a mostrar la lista -->
       <ion-button fill="clear" size="small" (click)="selectedPokemon = null">
-        <!-- Ícono de volver atrás -->
         <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
         Volver a la lista
       </ion-button>
     </div>
 
-    <!-- Sección que muestra únicamente los detalles del Pokémon seleccionado -->
     <section class="pokemon-details" *ngIf="selectedPokemon as pokemon">
-      <!-- Nombre e identificador del Pokémon -->
       <h2>#{{ pokemon.id }} - {{ pokemon.name | titlecase }}</h2>
 
-      <!-- Imagen destacada seleccionada actualmente -->
       <div class="featured-image" *ngIf="imagenGrande">
-        <!-- Visualización de la imagen -->
         <img [src]="imagenGrande" [alt]="pokemon.name | titlecase" />
       </div>
 
-      <!-- Galería de imágenes del Pokémon -->
       <h3><ion-icon name="images-outline"></ion-icon> Galería</h3>
-      <!-- Cuadrícula de miniaturas -->
       <div class="gallery">
-        <!-- Botón interactivo para cada miniatura -->
         <button type="button" *ngFor="let url of imagenes(pokemon); let index = index"
           (click)="imagenGrande = url" [attr.aria-label]="'Mostrar imagen ' + (index + 1)">
-          <!-- Imagen de la miniatura -->
           <img [src]="url" [alt]="'Sprite ' + (index + 1) + ' de ' + pokemon.name" loading="lazy" />
         </button>
       </div>
-      <!-- Mensaje cuando la galería contiene pocas imágenes -->
       <p class="hint" *ngIf="imagenes(pokemon).length < 5">
         La API solo ofrece {{ imagenes(pokemon).length }} imágenes para este Pokémon.
       </p>
 
-      <!-- Reproductor de sonido y sprite animado -->
       <div class="media-controls">
-        <!-- Sonido o grito del Pokémon -->
         <div *ngIf="pokemon.cries?.latest || pokemon.cries?.legacy">
           <h3>Sonido</h3>
           <audio controls [src]="pokemon.cries?.latest || pokemon.cries?.legacy"></audio>
         </div>
-        <!-- Animación del Pokémon -->
         <div *ngIf="animacion(pokemon) as animatedSprite">
           <h3>Animación</h3>
           <img class="animated-sprite" [src]="animatedSprite" [alt]="'Animación de ' + pokemon.name" />
         </div>
       </div>
 
-      <!-- Tarjeta con los detalles generales organizados visualmente -->
       <div class="ion-padding-top">
         <ion-card>
-          <!-- Cabecera de la tarjeta de detalles generales -->
           <ion-card-header>
             <ion-card-title>Detalles Generales</ion-card-title>
           </ion-card-header>
-          <!-- Contenido estructurado de los detalles generales -->
           <ion-card-content>
-            <!-- Altura del Pokémon convertida a metros -->
             <p><strong>Altura:</strong> {{ pokemon.height / 10 }} m</p>
-            <!-- Peso del Pokémon convertido a kilogramos -->
             <p><strong>Peso:</strong> {{ pokemon.weight / 10 }} kg</p>
-            <!-- Tipos a los que pertenece el Pokémon -->
             <p><strong>Tipos:</strong>
-              <!-- Badges de cada tipo -->
               <ion-badge *ngFor="let t of pokemon.types" color="primary" style="margin-left: 6px;">
                 {{ t.type.name | uppercase }}
               </ion-badge>
             </p>
-            <!-- Habilidades básicas del Pokémon -->
             <p *ngIf="pokemon.abilities?.length">
               <strong>Habilidades:</strong>
-              <!-- Lista de nombres de habilidades -->
               <span *ngFor="let a of pokemon.abilities; let last = last">
                 {{ a.ability.name }}{{ !last ? ', ' : '' }}
               </span>
             </p>
-            <!-- Botón de acceso directo para comparar este Pokémon -->
             <div class="ion-margin-top">
               <ion-button expand="block" fill="outline" color="secondary" (click)="iniciarComparacionCon(pokemon.name)">
                 <ion-icon name="git-compare-outline" slot="start"></ion-icon>
@@ -128,14 +90,11 @@
         </ion-card>
       </div>
 
-      <!-- Visualización del JSON limitado únicamente a los detalles generales -->
       <div class="ion-padding-top">
         <ion-card>
-          <!-- Título que indica que el JSON ahora solo contiene los datos generales -->
           <ion-card-header>
             <ion-card-title>Detalles Generales (JSON)</ion-card-title>
           </ion-card-header>
-          <!-- Bloque preformateado con los detalles generales limpios -->
           <ion-card-content>
             <pre style="background: var(--ion-color-step-100, #f4f5f8); padding: 10px; border-radius: 8px; overflow-x: auto; font-size: 12px;">{{ pokemon | json }}</pre>
           </ion-card-content>
@@ -143,14 +102,11 @@
       </div>
     </section>
 
-    <!-- Mensaje de sugerencia cuando aún no se ha seleccionado ningún Pokémon -->
     <p class="hint" *ngIf="!selectedPokemon && !loading && !errorMessage">
       Busca un Pokémon o selecciónalo de la lista para ver sus detalles generales, imágenes y sonido.
     </p>
 
-    <!-- Lista general que se oculta automáticamente al seleccionar o buscar un Pokémon -->
     <ion-list *ngIf="!selectedPokemon">
-      <!-- Elemento interactivo para cada Pokémon de la lista -->
       <ion-item button detail *ngFor="let pokemon of pokemons" (click)="cargarPokemon(pokemon.name)">
         <ion-label>
           <h2>{{ pokemon.name | titlecase }}</h2>
@@ -161,60 +117,40 @@
       </ion-item>
     </ion-list>
 
-    <!-- Spinner de carga para la vista de lista -->
     <ion-spinner *ngIf="loading" class="loading-spinner" aria-label="Cargando" style="display: block; margin: 20px auto;"></ion-spinner>
   </div>
 
-  <!-- ================= SECCIÓN DE COMPARACIÓN ENTRE DOS POKÉMON ================= -->
   <div *ngIf="vistaActual === 'comparar'" class="ion-padding">
-    <!-- Tarjeta con los campos para ingresar los Pokémon -->
     <ion-card>
-      <!-- Cabecera de la tarjeta del comparador -->
       <ion-card-header>
-        <!-- Título principal -->
         <ion-card-title>Comparar Dos Pokémon</ion-card-title>
-        <!-- Subtítulo con instrucciones -->
         <ion-card-subtitle>Ingresa el nombre o número de dos Pokémon para comparar sus datos generales</ion-card-subtitle>
       </ion-card-header>
 
-      <!-- Formulario simple con los dos campos -->
       <ion-card-content>
-        <!-- Cuadrícula para distribuir los inputs -->
         <ion-grid>
           <ion-row>
-            <!-- Columna para el primer Pokémon -->
             <ion-col size="12" size-md="6">
-              <!-- Item contenedor del primer campo -->
               <ion-item lines="full">
-                <!-- Etiqueta del primer Pokémon -->
                 <ion-label position="stacked">Primer Pokémon</ion-label>
-                <!-- Campo de texto enlazado a compararNombre1 -->
                 <ion-input [(ngModel)]="compararNombre1" placeholder="Ej: pikachu o 25" (keyup.enter)="compararPokemons()"></ion-input>
               </ion-item>
             </ion-col>
 
-            <!-- Columna para el segundo Pokémon -->
             <ion-col size="12" size-md="6">
-              <!-- Item contenedor del segundo campo -->
               <ion-item lines="full">
-                <!-- Etiqueta del segundo Pokémon -->
                 <ion-label position="stacked">Segundo Pokémon</ion-label>
-                <!-- Campo de texto enlazado a compararNombre2 -->
                 <ion-input [(ngModel)]="compararNombre2" placeholder="Ej: charizard o 6" (keyup.enter)="compararPokemons()"></ion-input>
               </ion-item>
             </ion-col>
           </ion-row>
 
-          <!-- Fila con botones de acción -->
           <ion-row class="ion-margin-top">
             <ion-col size="12" class="ion-text-center">
-              <!-- Botón principal para ejecutar la comparación -->
               <ion-button (click)="compararPokemons()" [disabled]="cargandoComparacion" color="primary">
-                <!-- Ícono de comparación -->
                 <ion-icon name="git-compare-outline" slot="start"></ion-icon>
                 Comparar
               </ion-button>
-              <!-- Botón secundario para limpiar los campos -->
               <ion-button fill="outline" color="medium" (click)="limpiarComparacion()" [disabled]="cargandoComparacion">
                 Limpiar
               </ion-button>
@@ -222,92 +158,62 @@
           </ion-row>
         </ion-grid>
 
-        <!-- Spinner mientras se realiza la consulta de ambos Pokémon -->
         <ion-spinner *ngIf="cargandoComparacion" style="display: block; margin: 15px auto;"></ion-spinner>
 
-        <!-- Mensaje de error si la búsqueda falla -->
         <p class="error-message" *ngIf="errorComparacion">{{ errorComparacion }}</p>
       </ion-card-content>
     </ion-card>
 
-    <!-- Sección de resultados visible cuando ambos Pokémon están cargados -->
     <section *ngIf="pokemon1 && pokemon2">
-      <!-- Cuadrícula para mostrar las dos tarjetas lado a lado -->
       <ion-grid>
         <ion-row>
-          <!-- Tarjeta del primer Pokémon -->
           <ion-col size="12" size-md="6">
             <ion-card>
-              <!-- Imagen principal del primer Pokémon -->
               <div class="featured-image">
                 <img [src]="pokemon1.sprites.other?.['official-artwork']?.front_default || pokemon1.sprites.front_default" [alt]="pokemon1.name" />
               </div>
-              <!-- Encabezado con nombre e ID -->
               <ion-card-header class="ion-text-center">
                 <ion-card-title>#{{ pokemon1.id }} - {{ pokemon1.name | titlecase }}</ion-card-title>
-                <!-- Badges de los tipos del primer Pokémon -->
                 <div>
                   <ion-badge *ngFor="let t of pokemon1.types" color="primary" style="margin: 2px;">
                     {{ t.type.name | uppercase }}
                   </ion-badge>
                 </div>
               </ion-card-header>
-              <!-- Lista de estadísticas del primer Pokémon -->
               <ion-card-content>
-                <!-- Altura -->
                 <p><strong>Altura:</strong> {{ pokemon1.height / 10 }} m</p>
-                <!-- Peso -->
                 <p><strong>Peso:</strong> {{ pokemon1.weight / 10 }} kg</p>
-                <!-- Subtítulo de estadísticas -->
                 <h4 style="margin-top: 10px;">Estadísticas Base:</h4>
-                <!-- Puntos de vida (HP) -->
                 <p><strong>HP:</strong> {{ obtenerStat(pokemon1, 'hp') }}</p>
-                <!-- Ataque -->
                 <p><strong>Ataque:</strong> {{ obtenerStat(pokemon1, 'attack') }}</p>
-                <!-- Defensa -->
                 <p><strong>Defensa:</strong> {{ obtenerStat(pokemon1, 'defense') }}</p>
-                <!-- Velocidad -->
                 <p><strong>Velocidad:</strong> {{ obtenerStat(pokemon1, 'speed') }}</p>
-                <!-- Total acumulado de estadísticas -->
                 <p><strong>Total Estadísticas:</strong> {{ obtenerTotalStats(pokemon1) }}</p>
               </ion-card-content>
             </ion-card>
           </ion-col>
 
-          <!-- Tarjeta del segundo Pokémon -->
           <ion-col size="12" size-md="6">
             <ion-card>
-              <!-- Imagen principal del segundo Pokémon -->
               <div class="featured-image">
                 <img [src]="pokemon2.sprites.other?.['official-artwork']?.front_default || pokemon2.sprites.front_default" [alt]="pokemon2.name" />
               </div>
-              <!-- Encabezado con nombre e ID -->
               <ion-card-header class="ion-text-center">
                 <ion-card-title>#{{ pokemon2.id }} - {{ pokemon2.name | titlecase }}</ion-card-title>
-                <!-- Badges de los tipos del segundo Pokémon -->
                 <div>
                   <ion-badge *ngFor="let t of pokemon2.types" color="primary" style="margin: 2px;">
                     {{ t.type.name | uppercase }}
                   </ion-badge>
                 </div>
               </ion-card-header>
-              <!-- Lista de estadísticas del segundo Pokémon -->
               <ion-card-content>
-                <!-- Altura -->
                 <p><strong>Altura:</strong> {{ pokemon2.height / 10 }} m</p>
-                <!-- Peso -->
                 <p><strong>Peso:</strong> {{ pokemon2.weight / 10 }} kg</p>
-                <!-- Subtítulo de estadísticas -->
                 <h4 style="margin-top: 10px;">Estadísticas Base:</h4>
-                <!-- Puntos de vida (HP) -->
                 <p><strong>HP:</strong> {{ obtenerStat(pokemon2, 'hp') }}</p>
-                <!-- Ataque -->
                 <p><strong>Ataque:</strong> {{ obtenerStat(pokemon2, 'attack') }}</p>
-                <!-- Defensa -->
                 <p><strong>Defensa:</strong> {{ obtenerStat(pokemon2, 'defense') }}</p>
-                <!-- Velocidad -->
                 <p><strong>Velocidad:</strong> {{ obtenerStat(pokemon2, 'speed') }}</p>
-                <!-- Total acumulado de estadísticas -->
                 <p><strong>Total Estadísticas:</strong> {{ obtenerTotalStats(pokemon2) }}</p>
               </ion-card-content>
             </ion-card>
@@ -315,35 +221,27 @@
         </ion-row>
       </ion-grid>
 
-      <!-- Tarjeta con resumen de la comparación directa -->
       <ion-card color="light">
-        <!-- Cabecera del resumen -->
         <ion-card-header>
           <ion-card-title>Resumen de Comparación</ion-card-title>
         </ion-card-header>
-        <!-- Lista de ganadores por atributo -->
         <ion-card-content>
-          <!-- Comparación de Altura -->
           <p>
             <strong>Mayor Altura:</strong> 
             {{ pokemon1.height > pokemon2.height ? (pokemon1.name | titlecase) : (pokemon2.height > pokemon1.height ? (pokemon2.name | titlecase) : 'Empate') }}
           </p>
-          <!-- Comparación de Peso -->
           <p>
             <strong>Mayor Peso:</strong> 
             {{ pokemon1.weight > pokemon2.weight ? (pokemon1.name | titlecase) : (pokemon2.weight > pokemon1.weight ? (pokemon2.name | titlecase) : 'Empate') }}
           </p>
-          <!-- Comparación de Ataque -->
           <p>
             <strong>Mayor Ataque:</strong> 
             {{ obtenerStat(pokemon1, 'attack') > obtenerStat(pokemon2, 'attack') ? (pokemon1.name | titlecase) : (obtenerStat(pokemon2, 'attack') > obtenerStat(pokemon1, 'attack') ? (pokemon2.name | titlecase) : 'Empate') }}
           </p>
-          <!-- Comparación de Defensa -->
           <p>
             <strong>Mayor Defensa:</strong> 
             {{ obtenerStat(pokemon1, 'defense') > obtenerStat(pokemon2, 'defense') ? (pokemon1.name | titlecase) : (obtenerStat(pokemon2, 'defense') > obtenerStat(pokemon1, 'defense') ? (pokemon2.name | titlecase) : 'Empate') }}
           </p>
-          <!-- Comparación de Estadísticas Totales -->
           <p>
             <strong>Mejores Estadísticas Totales:</strong> 
             {{ obtenerTotalStats(pokemon1) > obtenerTotalStats(pokemon2) ? (pokemon1.name | titlecase) : (obtenerTotalStats(pokemon2) > obtenerTotalStats(pokemon1) ? (pokemon2.name | titlecase) : 'Empate') }}
