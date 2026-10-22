@@ -21,3 +21,33 @@ ionic generate service services/pokemon
 
 ionic generate page pages/pokemon-list
 
+
+----
+# Imagenes del Funcionamiento
+
+<table>
+<tr>
+<td align="center" width="50%">
+<strong>EXPLORAR</strong>
+<br><br>
+<img src="https://github.com/user-attachments/assets/d44bea5a-247d-4219-97b6-356e3363fbf6" alt="Captura de pantalla 1" width="240">
+</td>
+<td align="center" width="50%">
+<strong>COMPARAR</strong>
+<br><br>
+<img src="https://github.com/user-attachments/assets/41575449-a58a-4259-bf8b-02085a3ec03a" alt="Captura de pantalla 2" width="240">
+</td>
+</tr>
+<tr>
+<td align="center" width="50%">
+<strong>Información de Pokémon</strong>
+<br><br>
+<img src="https://github.com/user-attachments/assets/edd93d30-c067-497d-b714-12fee1e90b0e" alt="Captura de pantalla 3" width="180">
+</td>
+<td align="center" width="50%">
+<strong>Comparación 2 Pokémones</strong>
+<br><br>
+<img src="https://github.com/user-attachments/assets/3e890b11-e67b-4e84-a5f2-bf8668c66716" alt="Captura de pantalla 4" width="180">
+</td>
+</tr>
+</table>
