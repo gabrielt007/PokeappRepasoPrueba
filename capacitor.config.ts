@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
-  appName: 'pokeapp',
+  appId: 'com.toadchulde.monsterindex',
+  appName: 'Monster Index DB',
   webDir: 'www',
   plugins: {
     SplashScreen: {

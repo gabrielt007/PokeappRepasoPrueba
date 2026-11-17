@@ -1,53 +1,60 @@
-# Laboratorio 
-# Consumo de API's con ionic
+# Monster Index DB
 
-El presente repo contiene una aplicación que consume el API de https://pokeapi.co/, con el endpoint [https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0](https://pokeapi.co/api/v2/pokemon?limit=100000&offset=0)
+Aplicación móvil híbrida creada con Ionic, Angular y Capacitor para explorar,
+buscar y comparar información de criaturas mediante datos de PokéAPI.
 
-La actividad por realizar es generar una aplicación que me permita buscar y mostrar Pokémons pero con todas sus características, incluida su foto, para lo cual puede consumir el endpoint: https://pokeapi.co/api/v2/pokemon/ditto , en este caso "ditto" es el nombre del Pokémon a mostrar.
+## Requisitos
 
-Entregable: en el aula virtual deberá subir su repositorio de github donde debe detallar el proceso en el readme y adjuntar capturas de la app en ejecución. Pueden trabajar hasta 3 personas. Todos deben subir su repositorio.
+- Node.js 18.19 o posterior (compatible con Angular 18).
+- npm.
+- Ionic CLI: `npm install -g @ionic/cli`.
+- Android Studio para compilar y ejecutar en Android.
+- macOS con Xcode para compilar y ejecutar en iOS.
 
+## Instalación y desarrollo
 
-----
-ionic start pokeapp blank --type=angular
+```bash
+npm install
+ionic serve
+```
 
-(NgModules)
+`ionic serve` inicia la aplicación en el navegador con recarga durante el
+desarrollo.
 
-cd pokeapp
+## Compilación de producción
 
-npm install @angular/common @angular/http, puede que deba usar --force
+```bash
+ionic build --prod
+npx cap sync
+```
 
-ionic generate service services/pokemon
+Para compilar o ejecutar en Android, abre el proyecto nativo en Android Studio:
 
-ionic generate page pages/pokemon-list
+```bash
+npx cap open android
+```
 
+El proyecto incluye actualmente la plataforma Android. Para agregar iOS en
+macOS, instala primero su plataforma de Capacitor y sincronízala:
 
-----
-# Imagenes del Funcionamiento
+```bash
+npm install @capacitor/ios
+npx cap add ios
+npx cap sync ios
+npx cap open ios
+```
 
-<table>
-<tr>
-<td align="center" width="50%">
-<strong>EXPLORAR</strong>
-<br><br>
-<img src="https://github.com/user-attachments/assets/d44bea5a-247d-4219-97b6-356e3363fbf6" alt="Captura de pantalla 1" width="240">
-</td>
-<td align="center" width="50%">
-<strong>COMPARAR</strong>
-<br><br>
-<img src="https://github.com/user-attachments/assets/41575449-a58a-4259-bf8b-02085a3ec03a" alt="Captura de pantalla 2" width="240">
-</td>
-</tr>
-<tr>
-<td align="center" width="50%">
-<strong>Información de Pokémon</strong>
-<br><br>
-<img src="https://github.com/user-attachments/assets/edd93d30-c067-497d-b714-12fee1e90b0e" alt="Captura de pantalla 3" width="180">
-</td>
-<td align="center" width="50%">
-<strong>Comparación 2 Pokémones</strong>
-<br><br>
-<img src="https://github.com/user-attachments/assets/3e890b11-e67b-4e84-a5f2-bf8668c66716" alt="Captura de pantalla 4" width="180">
-</td>
-</tr>
-</table>
+## Datos y privacidad
+
+La aplicación consulta PokéAPI mediante HTTPS para mostrar información. Las
+imágenes y sonidos se cargan desde las URLs incluidas en las respuestas de la
+API. No recopila datos personales ni incorpora SDKs de rastreo o analítica de
+terceros. Consulta la [Política de Privacidad](./PRIVACY.md).
+
+## Aviso legal
+
+Aplicación no oficial desarrollada con fines educativos e informativos. Los
+datos y recursos provienen de PokéAPI. Pokémon y los nombres de los personajes
+son marcas registradas, propiedad y con derechos de autor de Nintendo,
+Creatures Inc. y GAME FREAK Inc. Esta app no está afiliada ni respaldada por los
+propietarios de la marca.
